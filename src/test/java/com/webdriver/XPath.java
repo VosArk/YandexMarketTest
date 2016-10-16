@@ -4,6 +4,8 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 
+import java.util.List;
+
 class XPath {
 
     void clickButtonByXPath(WebDriver driver, String xPathStr){
@@ -26,4 +28,17 @@ class XPath {
         WebElement element = driver.findElement(By.id(idValue));
         if(!element.isSelected()) element.click();
     }
+
+    boolean isElementDisplayedById(WebDriver driver, String idValue) {
+        return driver.findElement(By.id(idValue)).isDisplayed();
+    }
+
+    boolean isCheckBoxSelectedById(WebDriver driver, String idValue) {
+        return driver.findElement(By.id(idValue)).isSelected();
+    }
+
+    List<WebElement> getListOfWebElements(WebDriver driver, String xPathValue) {
+        return driver.findElements(By.xpath(xPathValue));
+    }
+
 }

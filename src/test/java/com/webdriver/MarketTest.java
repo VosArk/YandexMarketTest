@@ -1,17 +1,13 @@
 package com.webdriver;
 
-import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
-import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.Assert;
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
 public class MarketTest {
@@ -23,7 +19,6 @@ public class MarketTest {
     private PageYandexMarket pageYandexMarket;
     private PageCatalogModels pageCatalogModels;
     private PageCatalog pageCatalog;
-
 
     @BeforeTest
     public void SetUp() throws Exception {
@@ -47,16 +42,12 @@ public class MarketTest {
 
         System.out.println("2. Открытие вкладки \"Каталог\"");
         pageYandexMarket.clickOnCatalog();
-        //assert and sout"success"
-        //Assert.assertTrue(!driver.findElements(By.xpath("//...")).isEmpty(),"Отсутствует блок \"...\""); //Популярные товары - вынести название отдельно, по нему и искать
 
         System.out.println("3. Переход в \"Мобильные телефоны\"");
         pageYandexMarket.clickOnMobilePhones();
-        //assert and sout"success"
 
         System.out.println("4. Переход в \"Расширенный поиск\"");
         pageCatalogModels.clickOnAdvancedSearch();
-        //assert
 
         System.out.println("5. Ввод значения нижнего ценового порога");
         pageCatalog.setPriceFrom();
@@ -66,52 +57,39 @@ public class MarketTest {
 
         System.out.println("7. Кликнуть чекбокс \"В продаже\"");
         pageCatalog.checkOnStock();
-        //Assert.assertTrue(checkOnStock.isSelected(), "Значение чекбокса выбрано неверно");
+        Assert.assertTrue(pageCatalog.isCheckBoxOnStockSelected(), "Значение чекбокса \"В продаже\" выбрано неверно");
 
         System.out.println("8. Раскрыть блок \"Тип\"");
         pageCatalog.clickOnType();
-        //assert что есть нижний элемент Смартфон
+        //Assert.assertTrue(pageCatalog.isTypeAlreadyClicked(), "Блок тип не раскрыт");
 
         System.out.println("9. Кликнуть чекбокс \"смартфон\"");
         pageCatalog.checkOnSmartPhone();
+        Assert.assertTrue(pageCatalog.isCheckBoxSmartPhoneSelected(), "Значение чекбокса \"смартфон\" выбрано неверно");
 
         System.out.println("10. Кликнуть чекбокс \"Android\"");
         pageCatalog.checkOnAndroid();
+        Assert.assertTrue(pageCatalog.isCheckBoxAndroidSelected(), "Значение чекбокса \"Android\" выбрано неверно");
 
         driver.manage().timeouts().implicitlyWait(30, TimeUnit.SECONDS);
 
         try {
-            Thread.sleep(5000);
+            Thread.sleep(3000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
 
-        List <WebElement> list = driver.findElements(By.xpath("//*[starts-with(@data-id,'model-')]"));
+        List <WebElement> list = pageCatalog.getListOfAndroid();
         System.out.println("Всего устройств отображено на странице: " + list.size() + "\n");
 
-        int tagCount = 0;
-        char[] symb = list.get(0).getText().toCharArray();
-        for(int i = 0; i < list.get(0).getText().length(); i++) {
-            if(symb[i] == '\n') ++tagCount;
-        }
-        ++tagCount;
-
+        int tagCount = pageCatalog.getTagCount(list.get(0).getText());
         String[][] arraySmartPhones = new String[list.size()][tagCount];
         for(int i = 0; i < list.size(); i++) {
             arraySmartPhones[i] = list.get(i).getText().split("\\n+?");
         }
 
         List<Double> doubleList = new ArrayList<Double>();
-        Random random = new Random();
-        List<Integer> randArray = new ArrayList<Integer>();
-        int buf;
-        while(randArray.size() < list.size()) {
-            do {
-                buf = random.nextInt(list.size());
-            }
-            while(randArray.contains(buf));
-            randArray.add(buf);
-        }
+        List<Integer> randArray = pageCatalog.getListOfRandomInt(list.size());
 
         int rowCounter = 0;
         for(int i = 0; i < list.size(); i++){
